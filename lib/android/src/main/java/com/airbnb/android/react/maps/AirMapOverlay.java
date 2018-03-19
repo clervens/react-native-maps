@@ -23,7 +23,9 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
   private BitmapDescriptor iconBitmapDescriptor;
   private Bitmap iconBitmap;
   private float zIndex;
+  private float rotation;
   private float transparency;
+  private float[] position;
 
   private final ImageReader mImageReader;
   private GoogleMap map;
@@ -39,6 +41,22 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     this.bounds = new LatLngBounds(sw, ne);
     if (this.groundOverlay != null) {
       this.groundOverlay.setPositionFromBounds(this.bounds);
+    }
+  }
+
+  public void setPosition(ReadableArray position) {
+    this.position = new float[] {
+      ((float) position.getDouble(0)),
+      ((float) position.getDouble(1)),
+      ((float) position.getDouble(2))
+    };
+
+    if (this.groundOverlay != null) {
+      LatLng center = new LatLng(this.position[0],this.position[1]);
+      float width = this.position[2];
+
+      this.groundOverlay.setPosition(center);
+      this.groundOverlay.setDimensions(width);
     }
   }
 
@@ -60,6 +78,13 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     this.mImageReader.setImage(uri);
   }
 
+  public void setRotation(float rotation) {
+    this.rotation = rotation;
+    if (this.groundOverlay != null) {
+      this.groundOverlay.setBearing(rotation);
+    }
+  }
+
 
   public GroundOverlayOptions getGroundOverlayOptions() {
     if (this.groundOverlayOptions == null) {
@@ -75,8 +100,16 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     if (this.iconBitmapDescriptor != null) {
       GroundOverlayOptions options = new GroundOverlayOptions();
       options.image(iconBitmapDescriptor);
-      options.positionFromBounds(bounds);
+      if (bounds == null) {
+        LatLng center = new LatLng(this.position[0], this.position[1]);
+        float width = this.position[2];
+
+        options.position(center, width);
+      } else {
+        options.positionFromBounds(bounds);
+      }
       options.zIndex(zIndex);
+      options.bearing(rotation);
       return options;
     }
     return null;

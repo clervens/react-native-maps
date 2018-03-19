@@ -42,8 +42,13 @@ public class AirMapOverlayManager extends ViewGroupManager<AirMapOverlay> {
   }
 
   @ReactProp(name = "bounds")
-  public void setBounds(AirMapOverlay view, ReadableArray bounds) {
+  public void setBounds(AirMapOverlay view, @Nullable ReadableArray bounds) {
     view.setBounds(bounds);
+  }
+
+  @ReactProp(name = "initialPosition")
+  public void setPosition(AirMapOverlay view, @Nullable ReadableArray position) {
+    view.setPosition(position);
   }
 
   @ReactProp(name = "zIndex", defaultFloat = 1.0f)
@@ -59,6 +64,11 @@ public class AirMapOverlayManager extends ViewGroupManager<AirMapOverlay> {
   @ReactProp(name = "image")
   public void setImage(AirMapOverlay view, @Nullable String source) {
     view.setImage(source);
+  }
+
+  @ReactProp(name = "rotation", defaultFloat = 0.0f)
+  public void setRotation(AirMapOverlay view, float rotation) {
+    view.setRotation(rotation);
   }
 
 
